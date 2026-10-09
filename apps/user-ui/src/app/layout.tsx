@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Poppins, Roboto } from "next/font/google";
 import "./globals.css";
 import Header from "@/component/widgets/header";
+import Providers from "@/configs/providers";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -20,15 +22,17 @@ export const metadata: Metadata = {
   description: "Created by Giddytech",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
       className={`${roboto.variable} ${poppins.variable}`}
     >
       <body>
-        <Header />
-        {children}
+        <Providers>
+          <Header />
+          {children}
+        </Providers>
       </body>
     </html>
   );
