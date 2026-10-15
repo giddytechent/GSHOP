@@ -4,6 +4,7 @@ import { Poppins, Roboto } from "next/font/google";
 import "./globals.css";
 import Header from "@/component/widgets/header";
 import Providers from "@/configs/providers";
+import { Toaster } from "sonner";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Providers>
           <Header />
           {children}
+          <Toaster richColors position="bottom-right" />
         </Providers>
       </body>
     </html>

@@ -1,127 +1,169 @@
-"use client"
+"use client";
 
 import GoogleButton from "@/component/icons/GoogleButton";
+import { useMutation } from "@tanstack/react-query";
+import axios, { AxiosError } from "axios";
 import { Eye, EyeOff } from "lucide-react";
-import Link from "next/link"
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-type formdata = {
-    email: string;
-    password: string;
-}
+type FormData = {
+  email: string;
+  password: string;
+};
 export default function Login() {
-    const [passwordvisible, setPasswordVisible] = useState(false);
-    const [serverError, setServerError] = useState<string | null>(null);
-    const [rememberMe, setRememberMe] = useState(false);
+  const [passwordvisible, setPasswordVisible] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [rememberMe, setRememberMe] = useState(false);
 
-    const router = useRouter();
+  const router = useRouter();
 
-    const { register, handleSubmit, formState: { errors } } = useForm<formdata>()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>();
 
-    const onSubmit = async (data: formdata) => {
+  const loginMutation = useMutation({
+    mutationFn: async (data: FormData) => {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URI}/api/login`,
+        data,
+        { withCredentials: true },
+      );
+      return response.data;
+    },
+    onSuccess: (data) => {
+      setServerError(null);
+      toast.success("Login successful");
+      router.push("/");
+    },
+    onError: (error: AxiosError) => {
+      const errorMessage =
+        (error.response?.data as { message?: string })?.message ||
+        "Invalid credentials!";
+      setServerError(errorMessage);
+    },
+  });
 
-    }
+  const onSubmit = async (data: FormData) => {
+    loginMutation.mutate(data);
+  };
 
-    const handleGoogleSignIn = () => {
-        // Connect your Google OAuth or Firebase authentication here.
-        console.log("Google sign-in clicked");
-    };
+  const handleGoogleSignIn = () => {
+    // Connect your Google OAuth or Firebase authentication here.
+    console.log("Google sign-in clicked");
+  };
 
-    return (
-        <div className="w-full py-10 min-h-[85vh] bg-[#f1f1f1]">
-            <h1 className="text-4xl font-Poppins font-semibold text-center text-gray-800">
-                Login
-            </h1>
-            <p className="text-center text-lg font-medium py-3 text-[#00000099]">
-                Home . Login
-            </p>
+  return (
+    <div className="w-full py-10 min-h-[85vh] bg-[#f1f1f1]">
+      <h1 className="text-4xl font-Poppins font-semibold text-center text-gray-800">
+        Login
+      </h1>
+      <p className="text-center text-lg font-medium py-3 text-[#00000099]">
+        Home . Login
+      </p>
 
-            <div className="w-full flex justify-center">
-                <div className="md:w-120 p-8 bg-white shadow rounded-lg">
-                    <h3 className="text-3xl font-semibold text-center text-gray-800 mb-2">Login to Gshop</h3>
-                    <p className="text-center text-gray-500 mb-4">
-                        Don't have an account? {' '}
-                        <Link href="/signup" className="text-blue-500 hover:underline">
-                            Sign Up
-                        </Link>
-                    </p>
+      <div className="w-full flex justify-center">
+        <div className="md:w-120 p-8 bg-white shadow rounded-lg">
+          <h3 className="text-3xl font-semibold text-center text-gray-800 mb-2">
+            Login to Gshop
+          </h3>
+          <p className="text-center text-gray-500 mb-4">
+            Don't have an account?{" "}
+            <Link href="/signup" className="text-blue-500 hover:underline">
+              Sign Up
+            </Link>
+          </p>
 
+          <GoogleButton onClick={handleGoogleSignIn} />
+          <div className="flex items-center my-5 text-gray-400 tet-sm">
+            <div className="flex-1 border-t border-gray-300" />
+            <span className="px-3">or Sign in with Email</span>
+            <div className="flex-1 border-t border-gray-300" />
+          </div>
 
-                    <GoogleButton onClick={handleGoogleSignIn} />
-                    <div className="flex items-center my-5 text-gray-400 tet-sm">
-                        <div className="flex-1 border-t border-gray-300" />
-                        <span className="px-3">or Sign in with Email</span>
-                        <div className="flex-1 border-t border-gray-300" />
-                    </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <label className="block text-gray-700 mb-1">Email</label>
+            <input
+              type="email"
+              placeholder="support@gshop.com"
+              className="w-full p-2 text-gray-500 border border-gray-300 outline-0 rounded! mb-1"
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/,
+                  message: "Invalid email address",
+                },
+              })}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email.message}</p>
+            )}
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <label className="block text-gray-700 mb-1">Email</label>
-                        <input
-                            type="email"
-                            placeholder="support@gshop.com"
-                            className="w-full p-2 text-gray-500 border border-gray-300 outline-0 rounded! mb-1"
-                            {...register("email", {
-                                required: "Email is required",
-                                pattern: {
-                                    value: /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/,
-                                    message: "Invalid email address",
-                                },
-                            })}
-                        />
-                        {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+            <label className="block text-gray-700 mb-1">Password</label>
+            <div className="relative">
+              <input
+                type={passwordvisible ? "text" : "password"}
+                placeholder="••••••••"
+                className="w-full p-2 text-gray-500 border border-gray-300 outline-0 rounded! mb-1"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters long",
+                  },
+                })}
+              />
 
-                        <label className="block text-gray-700 mb-1">Password</label>
-                        <div className="relative">
-                            <input
-                            type={passwordvisible ? "text" : "password"}
-                            placeholder="••••••••"
-                            className="w-full p-2 text-gray-500 border border-gray-300 outline-0 rounded! mb-1"
-                            {...register("password", {
-                                required: "Password is required",
-                                minLength: {
-                                    value: 6,
-                                    message: "Password must be at least 6 characters long",
-                                },
-                            })}
-                        />
-
-                        <button
-                            type="button"
-                            onClick={() => setPasswordVisible(!passwordvisible)}
-                            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
-                        >
-                            {passwordvisible ? <Eye /> : <EyeOff />}
-                        </button>
-                        {errors.password && <p className="text-red-500 text-sm">{String(errors.password.message)}</p>}
-                        </div>
-                        <div className="flex items-center justify-between my-4">
-                            <label className="flex items-center text-gray-600">
-                                <input
-                                    type="checkbox"
-                                    className="mr-2"
-                                    checked={rememberMe}
-                                    onChange={() => setRememberMe(!rememberMe)}
-                                />
-                                Remember me
-                            </label>
-                            <Link href="/forgot-password" className="text-blue-500 text-sm hover:underline">
-                                Forgot Password?
-                            </Link>
-                        </div>
-
-                        <button
-                            type="submit"
-                            className="w-full text-lg cursor-pointer bg-black text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
-                        >
-                            Login
-                        </button>
-
-                        {serverError && <p className="text-red-500 text-sm mt-2">{serverError}</p>}
-                    </form>
-                </div>
+              <button
+                type="button"
+                onClick={() => setPasswordVisible(!passwordvisible)}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
+              >
+                {passwordvisible ? <Eye /> : <EyeOff />}
+              </button>
+              {errors.password && (
+                <p className="text-red-500 text-sm">
+                  {String(errors.password.message)}
+                </p>
+              )}
             </div>
+            <div className="flex items-center justify-between my-4">
+              <label className="flex items-center text-gray-600">
+                <input
+                  type="checkbox"
+                  className="mr-2"
+                  checked={rememberMe}
+                  onChange={() => setRememberMe(!rememberMe)}
+                />
+                Remember me
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-blue-500 text-sm hover:underline"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loginMutation.isPending}
+              className="w-full text-lg cursor-pointer bg-black text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              {loginMutation?.isPending ? "Logging in" : "Login"}
+            </button>
+
+            {serverError && (
+              <p className="text-red-500 text-sm mt-2">{serverError}</p>
+            )}
+          </form>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
