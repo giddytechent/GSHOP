@@ -241,9 +241,9 @@ export default function Signup() {
               >
                 {verifyOtpMutation.isPending ? "Verifying..." : "Verify OTP"}
               </button>
-              <p className="text-center text-sm mt-4">
+              <p className="text-center text-gray-700 text-sm mt-4">
                 {canResend ? (
-                  <button>Resend OTP</button>
+                  <button type="button" onClick={() => resendOtp()}>Resend OTP</button>
                 ) : (
                   `Resend OTP in ${timer}s`
                 )}

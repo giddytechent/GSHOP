@@ -11,7 +11,7 @@ import {
 import prisma from "database";
 import { AuthError, ValidationError } from "@repo/error-handler";
 import bcrypt from "bcryptjs";
-import jwt, { JsonWebTokenError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { setCookie } from "../utils/setCookie.js";
 
 // Register User
@@ -152,7 +152,7 @@ export const refreshToken = async (
     };
 
     if (!decoded || !decoded.id || !decoded.role) {
-      return new JsonWebTokenError("Forbidden! Invalid refresh token.");
+      return next(new jwt.JsonWebTokenError("Forbidden! Invalid refresh token."));
     }
 
     // let account

@@ -2,28 +2,6 @@ import nodemailer from "nodemailer";
 import ejs from "ejs"
 import path from "path";
 
-
-// const transporter = nodemailer.createTransport({
-//   host: process.env.SMTP_HOST,
-//   port: Number(process.env.SMTP_PORT) || 587,
-//   service: process.env.SMTP_SERVICE,
-//   auth: {
-//     user: process.env.SMTP_USER,
-//     pass: process.env.SMTP_PASS
-//   }
-// });
-
-// const transporter1 = nodemailer.createTransport({
-//   service: "gmail", // Shortcut for Gmail's SMTP settings - see Well-Known Services
-//   auth: {
-//     type: "OAuth2",
-//     user: process.env.SMTP_USER,
-//     clientId: process.env.GOOGLE_CLIENT_ID,
-//     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//     refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-//   },
-// });
-
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {

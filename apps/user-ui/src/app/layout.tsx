@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Poppins, Roboto } from "next/font/google";
 import "./globals.css";
-import Header from "@/component/widgets/header";
+import Header from "@/component/widgets/Header";
 import Providers from "@/configs/providers";
 import { Toaster } from "sonner";
 

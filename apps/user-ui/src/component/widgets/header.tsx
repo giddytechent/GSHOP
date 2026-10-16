@@ -1,11 +1,15 @@
+"use client"
+
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { ProfileIcon } from "../icons/ProfileIcon";
 import HeartIcon from "../icons/HeartIcon";
 import CartIcon from "../icons/CartIcon";
 import HeaderBottom from "./HeaderBottom";
+import useUser from "../../hooks/useUser";
 
 export default function Header() {
+    const {user, isLoading} = useUser()
     return (
         <div className="w-full bg-white">
             <div className="w-[80%] py-5 m-auto flex items-center justify-between">
@@ -25,18 +29,36 @@ export default function Header() {
                 </div>
                 <div className="flex items-center gap-8 text-gray-900">
                     <div className="flex items-center gap-2">
-                        <Link href="/login"
+                        {!isLoading && user ? (
+                            <>
+                            <Link href="/profile"
                             className="border-2 w-12.5 h-12.5 flex items-center justify-center rounded-full border-[#06111b1a]"
                         >
                             <ProfileIcon />
                         </Link>
-
+                        <Link href="/profile">
+                            <span className="block font-medium">
+                                Hello,
+                            </span>
+                            <span className="font-semibold">{user?.name?.split(" ")[0]}</span>
+                        </Link>
+                        </>
+                        ):(
+                            <>
+                            <Link href="/login"
+                            className="border-2 w-12.5 h-12.5 flex items-center justify-center rounded-full border-[#06111b1a]"
+                        >
+                            <ProfileIcon />
+                        </Link>
                         <Link href="/login">
                             <span className="block font-medium">
                                 Hello,
                             </span>
-                            <span className="font-semibold">Sign In</span>
+                            <span className="font-semibold">{isLoading ? "..." : "Sign In"}</span>
                         </Link>
+                        </>
+                        )}
+
                     </div>
                     <div className="flex items-center gap-5">
                         <Link
